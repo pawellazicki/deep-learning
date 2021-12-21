@@ -1,6 +1,7 @@
 # Scraper
 
 **Variables:**
+
 separator_category -> "category{separator_category}article_text"
 
 separator_article -> "arcticle1{separator_article}article2"
