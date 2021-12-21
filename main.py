@@ -1,30 +1,38 @@
-# from selenium import webdriver
-import array
-
 from bs4 import BeautifulSoup
-import pandas as pd
 import requests
 import sys
 
-def gotSiteInfo():
-    response = requests.get("https://www.dziennik.pl/artykuly,1")
+
+class Article:
+    def __init__(self, text, category):
+        self.text = text
+        self.category = category
+
+
+def got_site_info(page):
+    response = requests.get(f'https://www.dziennik.pl/artykuly,{page}')
     if response.status_code == 200:
-        print('got urls')
         return response
     else:
         print('cannot find urls')
         return False
 
-def parseHtmlToUrls(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    links = []
-    for link in soup.section.find_all('a'):
-        links.append(link.get('href'))
-#     remove last link to nex page
-    links.pop()
-    return links
 
-def getArticleSite(link):
+def parse_html_to_urls(html, i):
+    soup = BeautifulSoup(html, 'html.parser')
+    links_array = []
+    for link in soup.section.find_all('a'):
+        links_array.append(link.get('href'))
+
+    #     remove last link to nex page and to previous
+    if i > 0:
+        links_array.pop()
+    links_array.pop()
+    return links_array
+
+
+def get_article_html(link):
+    # print(f'{link}\n')
     response = requests.get(link)
     if response.status_code == 200:
         return response
@@ -32,28 +40,49 @@ def getArticleSite(link):
         print('cannot reach')
         return False
 
-def parseArticle(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    articleText = ""
+def get_category_from_link(link):
+    return link.split('.')[0].split('//')[1]
+
+def parse_article(html_to_parse):
+    soup = BeautifulSoup(html_to_parse, 'html.parser')
+    article_text = ""
     for paragraph in soup.find_all(class_='hyphenate'):
-        articleText += paragraph.get_text()
-    return articleText
+        article_text += paragraph.get_text()
+    return article_text
+
 
 if __name__ == '__main__':
-    separator = "\n-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=\n"
+    separator_category = '(=-=-=-)'
+    separator_article = '\n-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=-\=\n'
+    pagesOfArticles = 2
+
     fileText = ""
+    links = []
 
-    html = gotSiteInfo()
-    if html == False:
-        sys.exit()
-    links = parseHtmlToUrls(html.text)
+    print('Getting articles:')
 
+    for i in range(pagesOfArticles):
+        html = got_site_info(i + 1)
+        if not html:
+            sys.exit()
+        links = links + parse_html_to_urls(html.text, i)
+        print(f'Page: {i + 1}')
 
-    for link in links:
-        articleHtml = getArticleSite(link)
-        fileText += parseArticle(articleHtml.text)
-        fileText += separator
+    print(f'\ngot {len(links)} links to articles\n')
+
+    for i in range(len(links)):
+        print(f'processing article: {i}')
+
+        fileText += get_category_from_link(links[i])
+        fileText += separator_category
+
+        articleHtml = get_article_html(links[i])
+        fileText += parse_article(articleHtml.text)
+        fileText += separator_article
+
+    print('\nsaving to file...')
 
     with open("Output.txt", "w") as text_file:
         text_file.write(fileText)
-    print("finished")
+
+    print('articles saved!')
