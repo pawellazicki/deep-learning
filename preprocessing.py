@@ -7,6 +7,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import re
 
+from parameters import Parameters
+
 
 class Preprocessing:
     def __init__(self, num_words, seq_len):
@@ -96,6 +98,7 @@ class Preprocessing:
         for sentence in self.x_tokenized:
             if len(sentence) > self.seq_len:
                 self.seq_len = len(sentence)
+        Parameters.seq_len = self.seq_len
         for sentence in self.x_tokenized:
             while len(sentence) < self.seq_len:
                 sentence.insert(len(sentence), pad_idx)

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Parameters:
     # Preprocessing parameeters
-    seq_len: int = 662
+    seq_len: int = 32
     num_words: int = 2000
 
     # Model parameters

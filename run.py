@@ -92,7 +92,7 @@ class Run:
         true_positives = 0
         true_negatives = 0
         for true, pred in zip(grand_truth, predictions):
-            if (pred >= 0.5) and (true == 1):
+            if (pred >= 0.5) and (true >= 1):
                 true_positives += 1
             elif (pred < 0.5) and (true == 0):
                 true_negatives += 1
