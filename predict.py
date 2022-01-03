@@ -12,6 +12,7 @@ def main():
     test_text = []
     test_text.append(sys.argv[1])
     tokenizer = Tokenizer(num_words=MAX_VOCAB_SIZE)
+    tokenizer.fit_on_texts(test_text)
     test_seq = tokenizer.texts_to_sequences(test_text)
     test_pad = pad_sequences(test_seq, maxlen=MAX_SEQUENCE_LENGTH)
     possible_labels = []

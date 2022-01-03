@@ -10,15 +10,15 @@ from keras.models import Model
 from sklearn.metrics import roc_auc_score
 from preprocessing import Preprocessing
 
-MAX_SEQUENCE_LENGTH = 100
+MAX_SEQUENCE_LENGTH = 500
 MAX_VOCAB_SIZE = 20000
 EMBEDDING_DIM = 100
-VALIDATION_SPLIT = 0.2
+VALIDATION_SPLIT = 0.25
 BATCH_SIZE = 128
 EPOCHS = 100
 
 word2vec = {}
-with open(os.path.join('glove_polish.txt')) as f:
+with open(os.path.join('pl-embeddings-cbow.txt')) as f:
     # is just a space-separated text file in the format:
     # word vec[0] vec[1] vec[2] ...
     for line in f:

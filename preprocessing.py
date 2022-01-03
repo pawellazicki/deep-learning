@@ -42,11 +42,22 @@ class Preprocessing:
 
         self.texts = [x.lower() for x in self.texts]
         self.texts = [
-            re.sub(r'\^[A-Za-ząęźćśółżń]\s+', ' ', x) for x in self.texts
+            re.sub(r'\s+[A-Za-ząęźćśółżń]\s+', ' ', x) for x in self.texts
         ]
         self.texts = [
             re.sub(r'[^A-Za-ząęźćśółżń]+', ' ', x) for x in self.texts
         ]
+        # self.texts = [x.replace('ą', 'a') for x in self.texts]
+        # self.texts = [x.replace('ę', 'e') for x in self.texts]
+        # self.texts = [x.replace('ź', 'z') for x in self.texts]
+        # self.texts = [x.replace('ż', 'z') for x in self.texts]
+        # self.texts = [x.replace('ć', 'c') for x in self.texts]
+        # self.texts = [x.replace('ś', 's') for x in self.texts]
+        # self.texts = [x.replace('ó', 'o') for x in self.texts]
+        # self.texts = [x.replace('ł', 'l') for x in self.texts]
+        # self.texts = [x.replace('ń', 'n') for x in self.texts]
+        # self.texts = [re.sub(r'\s+[A-Za-z]\s+', ' ', x) for x in self.texts]
+        # self.texts = [re.sub(r'[^A-Za-z]+', ' ', x) for x in self.texts]
 
     def tokenize(self):
         stops = stopwords.words('polish')
