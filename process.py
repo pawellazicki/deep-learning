@@ -32,7 +32,7 @@ print('Found %s word vectors.' % len(word2vec))
 pr = Preprocessing()
 pr.load_data()
 pr.clean_text()
-#pr.remove_stops()
+pr.remove_stops()
 
 targets = pr.targets
 texts = pr.texts
