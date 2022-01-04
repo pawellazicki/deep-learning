@@ -31,6 +31,10 @@ class Preprocessing:
         df = pd.DataFrame(articles, index=['target', 'text']).T
         self.texts = df['text'].values
         self.targets = df['target'].values
+        zipped = zip(self.texts, self.targets)
+        zipped = filter(lambda item: item[0] != '\n', zipped)
+        self.texts, self.targets = map(np.array, zip(*zipped))
+
         zeros = np.zeros(len(self.categories), dtype=int)
         targets_zeros = [zeros.copy() for _ in self.targets]
 
@@ -59,10 +63,11 @@ class Preprocessing:
         # self.texts = [re.sub(r'\s+[A-Za-z]\s+', ' ', x) for x in self.texts]
         # self.texts = [re.sub(r'[^A-Za-z]+', ' ', x) for x in self.texts]
 
-    def tokenize(self):
+    def remove_stops(self):
         stops = stopwords.words('polish')
         for idx, text in enumerate(self.texts):
             text_tokens = word_tokenize(text)
             self.texts[idx] = [
                 word for word in text_tokens if not word in stops
             ]
+            self.texts[idx] = ' '.join(self.texts[idx])

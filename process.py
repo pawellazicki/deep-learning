@@ -4,16 +4,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from keras.layers import Dense, Input, GlobalMaxPooling1D
+from keras.layers import Dense, Input, GlobalMaxPooling1D, Dropout
 from keras.layers import Conv1D, MaxPooling1D, Embedding
 from keras.models import Model
 from sklearn.metrics import roc_auc_score
 from preprocessing import Preprocessing
+from keras.utils.vis_utils import plot_model
 
 MAX_SEQUENCE_LENGTH = 500
 MAX_VOCAB_SIZE = 20000
 EMBEDDING_DIM = 100
-VALIDATION_SPLIT = 0.25
+VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 100
 EPOCHS = 100
 
@@ -31,7 +32,7 @@ print('Found %s word vectors.' % len(word2vec))
 pr = Preprocessing()
 pr.load_data()
 pr.clean_text()
-pr.tokenize()
+pr.remove_stops()
 
 targets = pr.targets
 texts = pr.texts
@@ -78,15 +79,19 @@ x = Conv1D(128, 3, activation='relu')(x)
 x = MaxPooling1D(3)(x)
 x = Conv1D(128, 3, activation='relu')(x)
 x = MaxPooling1D(3)(x)
-x = Conv1D(128, 3, activation='relu')(x)
+x = Conv1D(64, 3, activation='relu')(x)
 x = GlobalMaxPooling1D()(x)
-x = Dense(128, activation='relu')(x)
+x = Dense(64, activation='relu')(x)
+# x = Dropout(0.4)(x)
 output = Dense(len(possible_labels), activation='sigmoid')(x)
 
 model = Model(input_, output)
 model.compile(loss='binary_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
+
+dot_img_file = 'model_1.png'
+plot_model(model, to_file=dot_img_file, show_shapes=True)
 
 print('Training model...')
 r = model.fit(data,
