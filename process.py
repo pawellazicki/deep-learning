@@ -11,8 +11,8 @@ from sklearn.metrics import roc_auc_score
 from preprocessing import Preprocessing
 from keras.utils.vis_utils import plot_model
 
-MAX_SEQUENCE_LENGTH = 500
-MAX_VOCAB_SIZE = 20000
+MAX_SEQUENCE_LENGTH = 300
+MAX_VOCAB_SIZE = 30000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
 BATCH_SIZE = 100
@@ -47,10 +47,10 @@ tokenizer.fit_on_texts(texts)
 
 texts = tokenizer.texts_to_sequences(texts)
 
-print("max sequence length:", max(len(s) for s in texts))
-print("min sequence length:", min(len(s) for s in texts))
+print("max text length:", max(len(s) for s in texts))
+print("min text length:", min(len(s) for s in texts))
 s = sorted(len(s) for s in texts)
-print("median sequence length:", s[len(s) // 2])
+print("median text length:", s[len(s) // 2])
 
 print("max word index:", max(max(seq) for seq in texts if len(seq) > 0))
 
@@ -75,11 +75,11 @@ embedding_layer = Embedding(num_words,
 # CNN model
 input_ = Input(shape=(MAX_SEQUENCE_LENGTH, ))
 x = embedding_layer(input_)
-x = Conv1D(128, 3, activation='relu')(x)
+x = Conv1D(128, 2, activation='relu')(x)
 x = MaxPooling1D(3)(x)
-x = Conv1D(128, 3, activation='relu')(x)
+x = Conv1D(128, 2, activation='relu')(x)
 x = MaxPooling1D(3)(x)
-x = Conv1D(128, 3, activation='relu')(x)
+x = Conv1D(128, 2, activation='relu')(x)
 x = GlobalMaxPooling1D()(x)
 x = Dense(128, activation='relu')(x)
 output = Dense(len(possible_labels), activation='sigmoid')(x)
