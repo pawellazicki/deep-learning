@@ -3,8 +3,8 @@ from keras.models import load_model
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 
-MAX_VOCAB_SIZE = 20000
-MAX_SEQUENCE_LENGTH = 100
+MAX_VOCAB_SIZE = 30000
+MAX_SEQUENCE_LENGTH = 200
 
 
 def main():

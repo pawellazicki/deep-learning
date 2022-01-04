@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import re
+import random
 
 
 class Preprocessing:
@@ -31,7 +32,9 @@ class Preprocessing:
         df = pd.DataFrame(articles, index=['target', 'text']).T
         self.texts = df['text'].values
         self.targets = df['target'].values
-        zipped = zip(self.texts, self.targets)
+
+        zipped = list(zip(self.texts, self.targets))
+        random.shuffle(zipped)
         zipped = filter(lambda item: item[0] != '\n', zipped)
         self.texts, self.targets = map(np.array, zip(*zipped))
 
