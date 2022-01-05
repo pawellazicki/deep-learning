@@ -15,13 +15,11 @@ MAX_SEQUENCE_LENGTH = 200
 MAX_VOCAB_SIZE = 30000
 EMBEDDING_DIM = 100
 VALIDATION_SPLIT = 0.2
-BATCH_SIZE = 100
+BATCH_SIZE = 128
 EPOCHS = 20
 
 word2vec = {}
 with open(os.path.join('vectors/pl-embeddings-cbow.txt')) as f:
-    # is just a space-separated text file in the format:
-    # word vec[0] vec[1] vec[2] ...
     for line in f:
         values = line.split()
         word = values[0]

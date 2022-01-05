@@ -11,7 +11,7 @@ import random
 
 class Preprocessing:
     def __init__(self):
-        self.data = 'Output.txt'
+        self.data = 'Output_44k.txt'
         self.texts = None
         self.targets = None
 
