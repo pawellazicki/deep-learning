@@ -10,13 +10,14 @@ from keras.models import Model
 from sklearn.metrics import roc_auc_score
 from preprocessing import Preprocessing
 from keras.utils.vis_utils import plot_model
+from matplotlib import pyplot as plt
 
 MAX_SEQUENCE_LENGTH = 200
 MAX_VOCAB_SIZE = 30000
 EMBEDDING_DIM = 100
-VALIDATION_SPLIT = 0.2
+VALIDATION_SPLIT = 0.25
 BATCH_SIZE = 128
-EPOCHS = 20
+EPOCHS = 5
 
 word2vec = {}
 with open(os.path.join('vectors/pl-embeddings-cbow.txt')) as f:
@@ -61,7 +62,6 @@ for word, i in word2idx.items():
     if i < MAX_VOCAB_SIZE:
         embedding_vector = word2vec.get(word)
         if embedding_vector is not None:
-            # words not found in embedding index will be all zeros.
             embedding_matrix[i] = embedding_vector
 
 embedding_layer = Embedding(num_words,
@@ -73,17 +73,17 @@ embedding_layer = Embedding(num_words,
 # CNN model
 input_ = Input(shape=(MAX_SEQUENCE_LENGTH, ))
 x = embedding_layer(input_)
-x = Conv1D(128, 2, activation='relu')(x)
+x = Conv1D(128, 3, activation='relu')(x)
 x = MaxPooling1D(3)(x)
-x = Conv1D(128, 2, activation='relu')(x)
+x = Conv1D(128, 3, activation='relu')(x)
 x = MaxPooling1D(3)(x)
-x = Conv1D(128, 2, activation='relu')(x)
+x = Conv1D(128, 3, activation='relu')(x)
 x = GlobalMaxPooling1D()(x)
 x = Dense(128, activation='relu')(x)
-output = Dense(len(possible_labels), activation='sigmoid')(x)
+output = Dense(len(possible_labels), activation='softmax')(x)
 
 model = Model(input_, output)
-model.compile(loss='binary_crossentropy',
+model.compile(loss='categorical_crossentropy',
               optimizer='rmsprop',
               metrics=['accuracy'])
 
@@ -91,9 +91,28 @@ dot_img_file = 'model_1.png'
 plot_model(model, to_file=dot_img_file, show_shapes=True)
 
 print('Training model...')
-r = model.fit(data,
-              targets,
-              batch_size=BATCH_SIZE,
-              epochs=EPOCHS,
-              validation_split=VALIDATION_SPLIT)
+history = model.fit(data,
+                    targets,
+                    batch_size=BATCH_SIZE,
+                    epochs=EPOCHS,
+                    validation_split=VALIDATION_SPLIT)
+
+# Accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'val'], loc='upper left')
+plt.show()
+
+# Loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'val'], loc='upper left')
+plt.show()
+
 model.save("model/cnn_model")
